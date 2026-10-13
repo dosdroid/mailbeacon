@@ -1,6 +1,8 @@
 #include "driver/gpio.h"
 #include "driver/rtc_io.h"
+#include "esp_bit_defs.h"
 #include "esp_bt.h"
+#include "esp_idf_version.h"
 #include "esp_log.h"
 #include "esp_sleep.h"
 #include "esp_system.h"
@@ -154,13 +156,22 @@ void app_main(void) {
   gpio_hold_dis(BIG_DOOR_GPIO);
   gpio_deep_sleep_hold_dis();
 
+  // ESP-IDF 6.0 replaced the single wake cause with a bitmap of all causes.
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(6, 0, 0)
+  uint32_t wake_causes = esp_sleep_get_wakeup_causes();
+  bool woke_by_gpio = (wake_causes & BIT(ESP_SLEEP_WAKEUP_GPIO)) != 0;
+  bool woke_by_timer = (wake_causes & BIT(ESP_SLEEP_WAKEUP_TIMER)) != 0;
+#else
   esp_sleep_source_t wake_cause = esp_sleep_get_wakeup_cause();
-  if (wake_cause != ESP_SLEEP_WAKEUP_GPIO && wake_cause != ESP_SLEEP_WAKEUP_TIMER) {
+  bool woke_by_gpio = (wake_cause == ESP_SLEEP_WAKEUP_GPIO);
+  bool woke_by_timer = (wake_cause == ESP_SLEEP_WAKEUP_TIMER);
+#endif
+  if (!woke_by_gpio && !woke_by_timer) {
     nvs_init_and_load();
   }
 
   // 1. Evaluate Wakeup Reason
-  if (wake_cause == ESP_SLEEP_WAKEUP_GPIO) {
+  if (woke_by_gpio) {
     uint64_t wake_pins = esp_sleep_get_gpio_wakeup_status();
     
     vTaskDelay(pdMS_TO_TICKS(10)); // tiny debounce settlement
@@ -257,7 +268,13 @@ void app_main(void) {
   }
 
   if (wakeup_mask > 0) {
+    // ESP-IDF 6.0 renamed the deep-sleep GPIO wakeup API.
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(6, 0, 0)
+    esp_sleep_enable_gpio_wakeup_on_hp_periph_powerdown(wakeup_mask,
+                                                         ESP_GPIO_WAKEUP_GPIO_LOW);
+#else
     esp_deep_sleep_enable_gpio_wakeup(wakeup_mask, ESP_GPIO_WAKEUP_GPIO_LOW);
+#endif
   } else {
     // If both doors are open, only wake up via the 24h timer failsafe
     ESP_LOGW(TAG, "Both doors are currently open. Disabling GPIO wakeup to "
