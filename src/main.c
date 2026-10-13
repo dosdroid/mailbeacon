@@ -130,16 +130,30 @@ void setup_gpio() {
   io_conf.mode = GPIO_MODE_OUTPUT;
   io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
   gpio_config(&io_conf);
+
+  // Weakest pad drive for the LED. While mail is waiting the LED is by far the
+  // largest load in deep sleep; the higher output impedance of the weak
+  // driver trims its current (and brightness) a little. Drive strength is part
+  // of the state latched by gpio_hold_en(), so it survives deep sleep.
+  gpio_set_drive_capability(MAIL_LED_GPIO, GPIO_DRIVE_CAP_0);
 }
 
 void app_main(void) {
   ESP_LOGI(TAG, "Booting Mailbox Sensor - Bare Metal Native...");
 
+  // Deep sleep resets the IO MUX/GPIO registers while the pads themselves stay
+  // latched by the hold function. Re-apply the pad configuration first, then
+  // release the holds, so the pads go straight from their held state to the
+  // configured one. g_mail_state lives in RTC memory and is already valid
+  // after a deep-sleep wake, so the LED is re-driven to its held level and
+  // does not glitch off.
+  setup_gpio();
+  gpio_set_level(MAIL_LED_GPIO, g_mail_state ? 1 : 0);
   gpio_hold_dis(MAIL_LED_GPIO);
+  gpio_hold_dis(SMALL_DOOR_GPIO);
+  gpio_hold_dis(BIG_DOOR_GPIO);
   gpio_deep_sleep_hold_dis();
 
-  setup_gpio();
-  
   esp_sleep_source_t wake_cause = esp_sleep_get_wakeup_cause();
   if (wake_cause != ESP_SLEEP_WAKEUP_GPIO && wake_cause != ESP_SLEEP_WAKEUP_TIMER) {
     nvs_init_and_load();
@@ -231,9 +245,6 @@ void app_main(void) {
   nimble_port_stop();
   nimble_port_deinit();
 
-  // Ensure hold is disabled so we can blink
-  gpio_hold_dis(MAIL_LED_GPIO);
-
   // Dynamically configure ESP32-C3 GPIO logic (Low = Wakeup)
   // Only arm wakeups for doors that are currently CLOSED.
   // This prevents infinite wake-loops if a door is jammed open.
@@ -265,14 +276,18 @@ void app_main(void) {
     vTaskDelay(pdMS_TO_TICKS(50));
   }
 
-  // Restore LED final hold state and freeze all required GPIO pads
-  if (g_mail_state) {
-    gpio_set_level(MAIL_LED_GPIO, 1);
-    gpio_hold_en(MAIL_LED_GPIO);
-  } else {
-    gpio_set_level(MAIL_LED_GPIO, 0);
-  }
+  // Restore the LED's final level and latch it. The pad is held in both
+  // states: GPIO0-5 lose their IO MUX configuration in deep sleep, so an
+  // unheld LED pad would float instead of being driven low.
+  gpio_set_level(MAIL_LED_GPIO, g_mail_state ? 1 : 0);
+  gpio_hold_en(MAIL_LED_GPIO);
 
+  // Latch the door inputs (input enable + pull-down) for deep sleep.
+  // Note: with CONFIG_ESP_SLEEP_GPIO_ENABLE_INTERNAL_RESISTORS enabled,
+  // esp_deep_sleep_start() would switch low-level wake pins to pull-UP right
+  // before sleeping, the opposite of what this wiring needs. That option is
+  // disabled in sdkconfig so the pull-down configured here is what the pads
+  // keep while asleep.
   gpio_hold_en(BIG_DOOR_GPIO);
   gpio_hold_en(SMALL_DOOR_GPIO);
   gpio_deep_sleep_hold_en();

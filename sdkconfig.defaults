@@ -6,3 +6,7 @@ CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
 CONFIG_HTTPD_MAX_REQ_HDR_LEN=2048
 CONFIG_HTTPD_MAX_URI_LEN=4096
 CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+# Keep the pull-down configured on the door-switch wake pins during deep sleep.
+# With this enabled, ESP-IDF forces pull-up on low-level wake pins right before
+# sleeping, which fights the pin-to-3V3 door switch wiring.
+CONFIG_ESP_SLEEP_GPIO_ENABLE_INTERNAL_RESISTORS=n
