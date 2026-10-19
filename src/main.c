@@ -29,30 +29,32 @@
 
 static const char *TAG = "MAILBEACON";
 RTC_DATA_ATTR static bool g_mail_state = false;
+// BTHome packet id, incremented once per wake. Lets receivers tell a new
+// broadcast from a repeat of the previous one, and gives Home Assistant a
+// value that changes on every wake, which a watchdog can key on.
+RTC_DATA_ATTR static uint8_t g_packet_id = 0;
 
 // NVS Keys
 #define NVS_NAMESPACE "mailbox"
 #define NVS_KEY_STATE "mail_state"
 
-// BTHome V2 Unencrypted Advertisement Data
-// HA Autodiscovery utilizes this format natively via the BTHome integration
+// BTHome V2 unencrypted advertisement. Home Assistant's BTHome integration
+// discovers this format natively. Layout (each AD element is length, type,
+// payload; the length byte counts the type byte too):
+//
+//   02 01 06                 Flags: LE General Discoverable, BR/EDR not supported
+//   08 16 D2 FC ...          Service Data, 16-bit UUID 0xFCD2 (BTHome), 8 bytes:
+//      44                    BTHome v2, unencrypted, trigger-based device flag
+//                            (tells HA the device sleeps and sends on events)
+//      00 <id>               object 0x00: packet id, uint8
+//      23 <state>            object 0x23: occupancy, 0 = empty, 1 = mail waiting
+//   08 09 'Mailbox'          Complete Local Name
 static uint8_t bthome_adv_data[] = {
-    // 1. Flags: LE General Discoverable, BR/EDR Not Supported
     0x02, 0x01, 0x06,
-    // 2. Service Data (BTHome UUID 0xFCD2)
-    0x08, 0x16, 0xD2, 0xFC,
-
-    // BTHome V2 (Unencrypted) | Bit 2 Enabled (Trigger-Based Device Flag).
-    // Instructs Home Assistant the device sleeps deeply, preventing timeout
-    // disconnects.
-    0x44,
-
-    0x23,
-    0x00, // bthome_adv_data[12] = Occupancy sensor logic (false = 0x00, true =
-          // 0x01)
-
-    // 3. Local Name "Mailbox"
+    0x08, 0x16, 0xD2, 0xFC, 0x44, 0x00, 0x00, 0x23, 0x00,
     0x08, 0x09, 'M', 'a', 'i', 'l', 'b', 'o', 'x'};
+#define BTHOME_IDX_PACKET_ID 9
+#define BTHOME_IDX_OCCUPANCY 11
 
 void nvs_init_and_load() {
   esp_err_t err = nvs_flash_init();
@@ -85,8 +87,9 @@ void nvs_save_state(bool state) {
 }
 
 void prepare_ble_payload() {
-  // Inject the real mail state into the BTHome occupancy object
-  bthome_adv_data[9] = g_mail_state ? 0x01 : 0x00;
+  g_packet_id++;
+  bthome_adv_data[BTHOME_IDX_PACKET_ID] = g_packet_id;
+  bthome_adv_data[BTHOME_IDX_OCCUPANCY] = g_mail_state ? 0x01 : 0x00;
 }
 
 static uint8_t own_addr_type;
