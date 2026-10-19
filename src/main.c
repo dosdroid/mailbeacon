@@ -27,7 +27,7 @@
 
 #include "esp_attr.h"
 
-static const char *TAG = "MAILBOX_IDF";
+static const char *TAG = "MAILBEACON";
 RTC_DATA_ATTR static bool g_mail_state = false;
 
 // NVS Keys
@@ -141,7 +141,7 @@ void setup_gpio() {
 }
 
 void app_main(void) {
-  ESP_LOGI(TAG, "Booting Mailbox Sensor - Bare Metal Native...");
+  ESP_LOGI(TAG, "MailBeacon booting...");
 
   // Deep sleep resets the IO MUX/GPIO registers while the pads themselves stay
   // latched by the hold function. Re-apply the pad configuration first, then
@@ -221,10 +221,7 @@ void app_main(void) {
   bool req_maintenance = (gpio_get_level(SMALL_DOOR_GPIO) == 0) &&
                          (gpio_get_level(BIG_DOOR_GPIO) == 0);
   if (req_maintenance) {
-    ESP_LOGI(TAG, "BOTH DOORS OPEN: Triggering Maintenance AP Mode!");
-    // To be implemented: Wi-Fi + HTTP Server spinup. For MVP, we will sit here
-    // infinite.
-    ESP_LOGI(TAG, "Starting Wi-Fi AP and OTA Server...");
+    ESP_LOGI(TAG, "BOTH DOORS OPEN: entering maintenance mode (Wi-Fi AP + OTA server)");
     start_ota_server();
 
     // Timeout logic: 10 minutes (600 seconds) max.
@@ -241,11 +238,8 @@ void app_main(void) {
 
     ESP_LOGW(TAG, "OTA Maintenance AP timed out after 10 minutes! Shutting "
                   "down Wi-Fi and sleeping to save battery.");
-    // esp_restart() could be used here to fully cleanly restart, but proceeding
-    // down into the standard deep sleep code is safer for the battery loop.
-    // Since we're dropping out of AP mode unexpectedly, we should just reboot
-    // the ESP to cleanly kill the Wi-Fi stack before the sleep process begins
-    // to ensure no background threads persist.
+    // Reboot rather than falling through to deep sleep: a clean restart is the
+    // simplest way to tear down the Wi-Fi stack and HTTP server completely.
     esp_restart();
   }
 

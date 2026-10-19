@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" width="960" height="620" font-family="Helvetica, Arial, sans-serif">
+  <title>MailBeacon wiring: Seeed XIAO ESP32-C3, two reed switches, one LED</title>
+  <rect width="960" height="620" fill="#fafafa"/>
+  <text x="480" y="34" text-anchor="middle" font-size="22" font-weight="bold" fill="#222">MailBeacon wiring (Seeed Studio XIAO ESP32-C3)</text>
+  <text x="480" y="56" text-anchor="middle" font-size="13" fill="#555">Two normally-open reed switches, one LED with a series resistor, one LiPo cell. Nothing else.</text>
+
+  <!-- ===== 3V3 rail: 3V3 pin -> right -> over the top -> down the left side ===== -->
+  <polyline points="600,240 640,240 640,90 180,90 180,240" fill="none" stroke="#d32f2f" stroke-width="3"/>
+  <text x="410" y="84" text-anchor="middle" font-size="12" fill="#d32f2f" font-weight="bold">3V3</text>
+
+  <!-- ===== GND: GND pin -> right (hops over the 3V3 riser) -> down -> left to the LED ===== -->
+  <path d="M600,205 L632,205 A8,8 0 0 1 648,205 L672,205 L672,540 L330,540" fill="none" stroke="#1565c0" stroke-width="3"/>
+  <text x="500" y="558" text-anchor="middle" font-size="12" fill="#1565c0" font-weight="bold">GND</text>
+
+  <!-- ===== Board ===== -->
+  <rect x="400" y="120" width="200" height="300" rx="14" fill="#1f6f3f" stroke="#0e3d22" stroke-width="2"/>
+  <rect x="450" y="110" width="100" height="36" rx="4" fill="#9aa0a6" stroke="#5f6368"/>
+  <text x="500" y="133" text-anchor="middle" font-size="11" fill="#222">USB-C</text>
+  <text x="500" y="318" text-anchor="middle" font-size="12" font-weight="bold" fill="#eaf6ee">XIAO</text>
+  <text x="500" y="334" text-anchor="middle" font-size="12" font-weight="bold" fill="#eaf6ee">ESP32-C3</text>
+
+  <!-- pins + in-board labels -->
+  <g font-size="11" fill="#eaf6ee">
+    <!-- left -->
+    <circle cx="400" cy="170" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="414" y="174">D0 · IO2</text>
+    <circle cx="400" cy="205" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="414" y="209" font-weight="bold">D1 · IO3</text>
+    <circle cx="400" cy="240" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="414" y="244" font-weight="bold">D2 · IO4</text>
+    <circle cx="400" cy="275" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="414" y="279" font-weight="bold">D3 · IO5</text>
+    <circle cx="400" cy="310" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="414" y="314">D4 · IO6</text>
+    <circle cx="400" cy="345" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="414" y="349">D5 · IO7</text>
+    <circle cx="400" cy="380" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="414" y="384">D6 · IO21</text>
+    <!-- right -->
+    <circle cx="600" cy="170" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="586" y="174" text-anchor="end">5V</text>
+    <circle cx="600" cy="205" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="586" y="209" text-anchor="end" font-weight="bold">GND</text>
+    <circle cx="600" cy="240" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="586" y="244" text-anchor="end" font-weight="bold">3V3</text>
+    <circle cx="600" cy="275" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="586" y="279" text-anchor="end">D10 · IO10</text>
+    <circle cx="600" cy="310" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="586" y="314" text-anchor="end">D9 · IO9</text>
+    <circle cx="600" cy="345" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="586" y="349" text-anchor="end">D8 · IO8</text>
+    <circle cx="600" cy="380" r="6" fill="#e8c36a" stroke="#7a5f00"/><text x="586" y="384" text-anchor="end">D7 · IO20</text>
+  </g>
+
+  <!-- battery pads (underside) -->
+  <rect x="460" y="392" width="34" height="22" rx="3" fill="#e0b000" stroke="#7a5f00"/>
+  <text x="477" y="407" text-anchor="middle" font-size="10" font-weight="bold" fill="#222">BAT+</text>
+  <rect x="506" y="392" width="34" height="22" rx="3" fill="#e0b000" stroke="#7a5f00"/>
+  <text x="523" y="407" text-anchor="middle" font-size="10" font-weight="bold" fill="#222">BAT−</text>
+
+  <!-- ===== Reed 2: collection door, GPIO3 ===== -->
+  <line x1="180" y1="205" x2="240" y2="205" stroke="#d32f2f" stroke-width="3"/>
+  <rect x="240" y="193" width="64" height="24" rx="12" fill="#fff" stroke="#333" stroke-width="2"/>
+  <line x1="248" y1="205" x2="270" y2="205" stroke="#333" stroke-width="2"/>
+  <line x1="270" y1="205" x2="290" y2="196" stroke="#333" stroke-width="2"/>
+  <line x1="304" y1="205" x2="394" y2="205" stroke="#333" stroke-width="3"/>
+  <text x="272" y="182" text-anchor="middle" font-size="12" fill="#222" font-weight="bold">Reed 2 (NO) · collection door</text>
+
+  <!-- ===== Reed 1: mail flap, GPIO4 ===== -->
+  <line x1="180" y1="240" x2="240" y2="240" stroke="#d32f2f" stroke-width="3"/>
+  <rect x="240" y="228" width="64" height="24" rx="12" fill="#fff" stroke="#333" stroke-width="2"/>
+  <line x1="248" y1="240" x2="270" y2="240" stroke="#333" stroke-width="2"/>
+  <line x1="270" y1="240" x2="290" y2="231" stroke="#333" stroke-width="2"/>
+  <line x1="304" y1="240" x2="394" y2="240" stroke="#333" stroke-width="3"/>
+  <text x="272" y="270" text-anchor="middle" font-size="12" fill="#222" font-weight="bold">Reed 1 (NO) · mail flap</text>
+
+  <!-- ===== LED: GPIO5 -> R1 -> LED -> GND ===== -->
+  <polyline points="394,275 330,275 330,330" fill="none" stroke="#333" stroke-width="3"/>
+  <rect x="314" y="330" width="32" height="60" fill="#fff" stroke="#333" stroke-width="2"/>
+  <text x="300" y="355" text-anchor="end" font-size="12" fill="#222" font-weight="bold">R1</text>
+  <text x="300" y="371" text-anchor="end" font-size="11" fill="#555">1 kΩ – 10 kΩ</text>
+  <line x1="330" y1="390" x2="330" y2="430" stroke="#333" stroke-width="3"/>
+  <polygon points="316,430 344,430 330,456" fill="#f4b400" stroke="#333" stroke-width="2"/>
+  <line x1="316" y1="456" x2="344" y2="456" stroke="#333" stroke-width="2"/>
+  <line x1="342" y1="436" x2="358" y2="422" stroke="#333" stroke-width="2"/>
+  <line x1="350" y1="446" x2="366" y2="432" stroke="#333" stroke-width="2"/>
+  <text x="300" y="440" text-anchor="end" font-size="12" fill="#222" font-weight="bold">LED</text>
+  <text x="300" y="456" text-anchor="end" font-size="11" fill="#555">"mail waiting"</text>
+  <line x1="330" y1="456" x2="330" y2="540" stroke="#333" stroke-width="3"/>
+
+  <!-- ===== Battery ===== -->
+  <line x1="477" y1="414" x2="477" y2="470" stroke="#d32f2f" stroke-width="3"/>
+  <line x1="523" y1="414" x2="523" y2="470" stroke="#1565c0" stroke-width="3"/>
+  <rect x="440" y="470" width="120" height="40" rx="6" fill="#fff" stroke="#333" stroke-width="2"/>
+  <text x="500" y="495" text-anchor="middle" font-size="12" fill="#222" font-weight="bold">LiPo 3.7 V</text>
+
+  <!-- ===== Notes ===== -->
+  <g font-size="12" fill="#333">
+    <text x="700" y="300" font-weight="bold">How the doors are read</text>
+    <text x="700" y="320">Door closed: the magnet holds the</text>
+    <text x="700" y="336">reed contact closed, the pin sits at</text>
+    <text x="700" y="352">3V3 and reads HIGH.</text>
+    <text x="700" y="376">Door opens: the contact opens, the</text>
+    <text x="700" y="392">chip's internal pull-down takes the</text>
+    <text x="700" y="408">pin LOW and the chip wakes up.</text>
+    <text x="700" y="432">Reed switches have no polarity.</text>
+    <text x="700" y="448">LED: long leg (anode) towards R1.</text>
+  </g>
+  <text x="480" y="596" text-anchor="middle" font-size="11" fill="#666">Board shown from the top with USB-C up. BAT+ / BAT− are solder pads on the underside. Pin names: Dx = XIAO label, IOx = ESP32-C3 GPIO number.</text>
+</svg>

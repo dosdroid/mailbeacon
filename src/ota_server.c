@@ -16,8 +16,24 @@
 
 static const char *TAG = "OTA_SERVER";
 
-#define AP_SSID "Mailbox-OTA"
-#define AP_PASS "CHANGE-ME-before-flashing"
+// Wi-Fi credentials come from src/secrets.h (see src/secrets.h.example) or
+// from -DOTA_AP_SSID / -DOTA_AP_PASSWORD build flags. Never commit real ones.
+#if __has_include("secrets.h")
+#include "secrets.h"
+#endif
+#ifndef OTA_AP_SSID
+#error "OTA_AP_SSID is not defined. Copy src/secrets.h.example to src/secrets.h and set your own values."
+#endif
+#ifndef OTA_AP_PASSWORD
+#error "OTA_AP_PASSWORD is not defined. Copy src/secrets.h.example to src/secrets.h and set your own values."
+#endif
+_Static_assert(sizeof(OTA_AP_PASSWORD) - 1 >= 8 && sizeof(OTA_AP_PASSWORD) - 1 <= 63,
+               "OTA_AP_PASSWORD must be 8 to 63 characters (WPA2 requirement)");
+_Static_assert(sizeof(OTA_AP_SSID) - 1 >= 1 && sizeof(OTA_AP_SSID) - 1 <= 32,
+               "OTA_AP_SSID must be 1 to 32 characters");
+
+#define AP_SSID OTA_AP_SSID
+#define AP_PASS OTA_AP_PASSWORD
 #define AP_MAX_CONN 4
 
 static esp_ota_handle_t ota_handle = 0;
@@ -69,7 +85,7 @@ static void wifi_init_softap(void) {
   ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
   ESP_ERROR_CHECK(esp_wifi_start());
 
-  ESP_LOGI(TAG, "Wi-Fi AP started. SSID: %s Password: %s", AP_SSID, AP_PASS);
+  ESP_LOGI(TAG, "Wi-Fi AP started. SSID: %s", AP_SSID);
 }
 
 static esp_err_t index_get_handler(httpd_req_t *req) {

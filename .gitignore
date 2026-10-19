@@ -1,2 +1,13 @@
+# PlatformIO build output and caches
+.pio/
+.vscode/
+sdkconfig.*.old
+dependencies.lock
+managed_components/
+
+# Local credentials (copy src/secrets.h.example to src/secrets.h)
+src/secrets.h
+
+# OS noise
 .DS_Store
-.pio
+Thumbs.db
