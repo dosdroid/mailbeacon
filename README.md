@@ -182,7 +182,7 @@ platformio.ini          Build configuration (PlatformIO, ESP-IDF framework)
 
 ## Roadmap
 
-- Battery voltage in the BTHome packet
+- Battery voltage in the BTHome packet (would require additional soldering or different board)
 - BTHome encryption
 - Normally-closed reed switch mode for zero standby current on the door pins
 - Light-sleep during the broadcast window to shorten the wake cycle further
