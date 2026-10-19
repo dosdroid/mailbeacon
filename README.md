@@ -18,7 +18,7 @@ Between those moments the device is in deep sleep and draws tens of microamps. A
 
 ## Why BTHome and Home Assistant
 
-- **Long range for almost nothing.** BLE advertisements at +9 dBm carry comfortably from a mailbox at the street to a Bluetooth proxy in the house. Every ESPHome device with `bluetooth_proxy:` enabled, and many Shelly devices, relay BTHome packets to Home Assistant, so coverage grows with your existing hardware.
+- **Long range for almost nothing.** BLE advertisements at +9 dBm carry comfortably from a mailbox at lobby to a Bluetooth proxy in the the flat two stories up through thick concrete. Every ESPHome device with `bluetooth_proxy:` enabled, and many Shelly devices, relay BTHome packets to Home Assistant, so coverage grows with your existing hardware.
 - **Zero configuration.** Home Assistant's built-in BTHome integration recognises the device and creates the entity on its own. There is nothing to enter.
 - **Nothing to keep alive.** No Wi-Fi association, no DHCP, no TLS handshake, no broker connection. Waking, sending and sleeping takes a few seconds, which is what makes the battery life possible.
 - **Open and local.** BTHome is an open specification. The data never leaves your home.
