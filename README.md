@@ -31,7 +31,7 @@ Between those moments the device is in deep sleep and draws tens of microamps. A
 | 2 × reed switch, **normally open** (Form A), with magnets | One for the mail flap, one for the collection door. |
 | 1 × LED + series resistor | Visible "mail waiting" indicator on the box. 1 kΩ to 10 kΩ, see [Battery life](#battery-life). |
 | 1 × LiPo cell, 3.7 V | 500 to 2000 mAh with a JST connector or soldered to the BAT pads. The XIAO charges it over USB-C. |
-| External 2.4 GHz antenna | Comes with the XIAO. Mount it outside any metal enclosure. |
+| External 2.4 GHz antenna | Comes with the XIAO. Mount it outside any metal enclosure. If possible. I have mine inside and it works. |
 
 ### Wiring
 
