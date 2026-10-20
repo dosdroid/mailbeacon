@@ -136,7 +136,7 @@ Typical standby current, measured at the battery:
 With a 1000 mAh cell and a few wakes a day, expect 6 to 8 months with the LED mostly off. Two things change that picture substantially:
 
 - **The LED resistor.** A modern high-efficiency LED is clearly visible at 0.3 mA. Use 4.7 kΩ to 10 kΩ rather than the usual 220 to 330 Ω, otherwise a week of uncollected mail costs more than months of standby.
-- **The reed switch sense.** The internal pull-downs only draw current while a door is closed, which is nearly always. Using a normally-closed (Form B) reed switch, or mounting the magnet so the contact is open while the door is closed, removes that 140 µA entirely and roughly triples standby life. This needs a one-line change in the firmware (wake on high instead of low) and is on the roadmap.
+- **The reed switch sense.** The internal pull-downs only draw current while a door is closed, which is nearly always. Using a normally-closed (Form B) reed switch, or mounting the magnet so the contact is open while the door is closed (impossible in my setup), removes that 140 µA entirely and roughly triples standby life. This needs a one-line change in the firmware (wake on high instead of low). I had trouble sourcing NC reeds so I just brute force it with 3300mAh LiPo.
 
 ## What it can and cannot do
 
